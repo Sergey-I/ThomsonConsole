@@ -10,6 +10,7 @@ namespace ThomsonConsole
     {
         static void Main(string[] args)
         {
+            
         }
     }
 }
