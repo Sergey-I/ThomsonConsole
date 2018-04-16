@@ -22,18 +22,23 @@ namespace ThomsonConsole
             var filesCount = 0;
             if (zipFiles != null)
             {
-                foreach (string file in zipFiles)
+                Directory.Delete(UnzipDestinatinationDirectory, true);
+                foreach (string zipFile in zipFiles)
                 {
-                    string fileName = Path.GetFileName(file);
-                    string fileDirectory = Path.GetDirectoryName(file);
+                    string fileName = Path.GetFileName(zipFile);
+                    string fileDirectory = Path.GetDirectoryName(zipFile);
                     Console.WriteLine($"{fileName,-15} : {fileDirectory}");
                     string destination = UnzipDestinatinationDirectory + 
                         fileDirectory.Substring(FilesSourceDirectory.Length) + @"\" + 
-                        Path.GetFileNameWithoutExtension(file);
-                    Console.WriteLine($"{fileName,-15} :will be unzip to {destination}");
-                    ZipFile.ExtractToDirectory(file, destination);
+                        Path.GetFileNameWithoutExtension(zipFile);
+                    ZipFile.ExtractToDirectory(zipFile, destination);
+                    List<string> csvFiles = FilesTreatment.FindAllCSVFiles(destination);
+                    foreach (string cvsfile in csvFiles)
+                    {
+                        Console.WriteLine($"{Path.GetFileName(cvsfile),-15} : {Path.GetDirectoryName(cvsfile)}");
+                    }
                 }
-                filesCount = zipFiles.Count + 1;
+                filesCount = zipFiles.Count;
             }
             Console.WriteLine($"   {filesCount} zip files found");
             Console.ReadLine();

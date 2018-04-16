@@ -12,14 +12,21 @@ namespace ThomsonConsole
 
     public class FilesTreatment
     {
-        const string SearchFilesMask = "*.zip";
+        const string ZipFileMask = "*.zip";
+        const string CSVFileMask = "*.csv";
 
         public static List<string> FindAllZipFiles(string root)
         {
-            return TraverseDirectoriesTree(root, SearchFilesMask);
+            return FindAllFiles(root, ZipFileMask);
         }
 
-        static List<string> TraverseDirectoriesTree(string root, string searchMask)
+        public static List<string> FindAllCSVFiles(string root)
+        {
+            return FindAllFiles(root, CSVFileMask);
+        }
+
+
+        public static List<string> FindAllFiles(string root, string searchMask)
         {
             List<string> result = new List<string>();
             Stack<string> dirs = new Stack<string>();
