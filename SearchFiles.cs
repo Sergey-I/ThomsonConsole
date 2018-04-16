@@ -10,10 +10,26 @@ using System.Threading.Tasks;
 namespace ThomsonConsole
 {
 
-    public class FilesTreatment
+    public class SearchFiles
     {
+        static SearchFiles()
+        {
+            AppDirectory = Directory.GetCurrentDirectory();
+            FilesSourceDirectory = AppDirectory + FolderOfSourcefiles;
+        }
+
+        static public string AppDirectory { get;}
+        static public string FilesSourceDirectory { get;}
+        static public string TemptoryDirectory { get;}
+
+        const string FolderOfSourcefiles = @"\Thomson\";
         const string ZipFileMask = "*.zip";
         const string CSVFileMask = "*.csv";
+
+        public static List<string> FindAllZipFiles()
+        {
+            return FindAllFiles(FilesSourceDirectory, ZipFileMask);
+        }
 
         public static List<string> FindAllZipFiles(string root)
         {
@@ -84,12 +100,5 @@ namespace ThomsonConsole
             }
             return result;
         }
-
-
-        public static void UnzipFile(string File, string destination)
-        {
-            ZipFile.ExtractToDirectory(File, destination);
-        }
-
     }
 }
