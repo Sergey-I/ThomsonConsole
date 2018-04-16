@@ -9,82 +9,72 @@ using System.Threading.Tasks;
 namespace ThomsonConsole
 {
 
-    public class ZipFilesSearch
+    public class FilesSearch
     {
         const string SearchFilesMask = "*.zip";
 
-        static List<String> TraverseTree(string root, string searchMask)
+        public static List<string> FindAllZipFiles(string root)
         {
-            // Data structure to hold names of subfolders to be
-            // examined for files.
-            Stack<string> dirs = new Stack<string>(20);
+            return TraverseDirectoriesTree(root, SearchFilesMask);
+        }
 
-            if (!System.IO.Directory.Exists(root))
+        static List<string> TraverseDirectoriesTree(string root, string searchMask)
+        {
+            List<string> result = new List<string>();
+            Stack<string> dirs = new Stack<string>();
+
+            if (System.IO.Directory.Exists(root))
             {
-                throw new ArgumentException();
-            }
-            dirs.Push(root);
+                dirs.Push(root);
 
-            while (dirs.Count > 0)
-            {
-                string currentDir = dirs.Pop();
-                string[] subDirs;
-                try
+                while (dirs.Count > 0)
                 {
-                    subDirs = System.IO.Directory.GetDirectories(currentDir);
-                }
-                catch (UnauthorizedAccessException e)
-                {
-                    Console.WriteLine(e.Message);
-                    continue;
-                }
-                catch (System.IO.DirectoryNotFoundException e)
-                {
-                    Console.WriteLine(e.Message);
-                    continue;
-                }
-
-                string[] files = null;
-                try
-                {
-                    files = System.IO.Directory.GetFiles(currentDir, searchMask);
-                }
-
-                catch (UnauthorizedAccessException e)
-                {
-
-                    Console.WriteLine(e.Message);
-                    continue;
-                }
-
-                catch (System.IO.DirectoryNotFoundException e)
-                {
-                    Console.WriteLine(e.Message);
-                    continue;
-                }
-                // Perform the required action on each file here.
-                // Modify this block to perform your required task.
-                foreach (string file in files)
-                {
+                    string currentDir = dirs.Pop();
+                    string[] subDirs;
                     try
                     {
-                        
-                        // Perform whatever action is required in your scenario.
-                        System.IO.FileInfo fi = new System.IO.FileInfo(file);
-                        Console.WriteLine("{0}: {1}, {2}", fi.Name, fi.Length, fi.CreationTime);
+                        subDirs = System.IO.Directory.GetDirectories(currentDir);
                     }
-                    catch (System.IO.FileNotFoundException e)
+                    catch (UnauthorizedAccessException e)
                     {
                         Console.WriteLine(e.Message);
                         continue;
                     }
-                }
+                    catch (System.IO.DirectoryNotFoundException e)
+                    {
+                        Console.WriteLine(e.Message);
+                        continue;
+                    }
 
-                // Push the subdirectories onto the stack for traversal.
-                // This could also be done before handing the files.
-                foreach (string str in subDirs)
-                    dirs.Push(str);
+                    string[] files = null;
+                    try
+                    {
+                        files = System.IO.Directory.GetFiles(currentDir, searchMask);
+                    }
+
+                    catch (UnauthorizedAccessException e)
+                    {
+
+                        Console.WriteLine(e.Message);
+                        continue;
+                    }
+
+                    catch (System.IO.DirectoryNotFoundException e)
+                    {
+                        Console.WriteLine(e.Message);
+                        continue;
+                    }
+
+                    if (files != null && files.Length > 0)
+                    {
+                        result.AddRange(files);
+                    }
+
+                    foreach (string str in subDirs)
+                        dirs.Push(str);
+                }
             }
+            return result;
         }
     }
 }
