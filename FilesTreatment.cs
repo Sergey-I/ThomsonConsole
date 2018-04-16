@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 namespace ThomsonConsole
 {
 
-    public class FilesSearch
+    public class FilesTreatment
     {
         const string SearchFilesMask = "*.zip";
 
@@ -23,7 +24,7 @@ namespace ThomsonConsole
             List<string> result = new List<string>();
             Stack<string> dirs = new Stack<string>();
 
-            if (System.IO.Directory.Exists(root))
+            if (Directory.Exists(root))
             {
                 dirs.Push(root);
 
@@ -33,14 +34,14 @@ namespace ThomsonConsole
                     string[] subDirs;
                     try
                     {
-                        subDirs = System.IO.Directory.GetDirectories(currentDir);
+                        subDirs = Directory.GetDirectories(currentDir);
                     }
                     catch (UnauthorizedAccessException e)
                     {
                         Console.WriteLine(e.Message);
                         continue;
                     }
-                    catch (System.IO.DirectoryNotFoundException e)
+                    catch (DirectoryNotFoundException e)
                     {
                         Console.WriteLine(e.Message);
                         continue;
@@ -49,7 +50,7 @@ namespace ThomsonConsole
                     string[] files = null;
                     try
                     {
-                        files = System.IO.Directory.GetFiles(currentDir, searchMask);
+                        files = Directory.GetFiles(currentDir, searchMask);
                     }
 
                     catch (UnauthorizedAccessException e)
@@ -59,7 +60,7 @@ namespace ThomsonConsole
                         continue;
                     }
 
-                    catch (System.IO.DirectoryNotFoundException e)
+                    catch (DirectoryNotFoundException e)
                     {
                         Console.WriteLine(e.Message);
                         continue;
@@ -76,5 +77,12 @@ namespace ThomsonConsole
             }
             return result;
         }
+
+
+        public static void UnzipFile(string File, string destination)
+        {
+            ZipFile.ExtractToDirectory(File, destination);
+        }
+
     }
 }
