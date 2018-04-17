@@ -14,17 +14,17 @@ namespace ThomsonConsole
     {
         static HandlingFiles()
         {
-
             FolderForUnzipFiles = SearchFiles.DirectorySeparatorChar + "Temp" + SearchFiles.DirectorySeparatorChar;
             TemporaryDirectory = SearchFiles.AppDirectory + FolderForUnzipFiles;
+            DelimitersCSV = new string[] { "," };
         }
 
         static public string TemporaryDirectory { get; }
         static string FolderForUnzipFiles { get; }
-
+        static string[] DelimitersCSV { get; }
 
         private const int MinimalQuantityOfFieldsInCVSFile = 1;
-
+ 
         public void ClearTemporaryDirectory()
         {
             ClearDirectory(TemporaryDirectory);
@@ -80,26 +80,20 @@ namespace ThomsonConsole
             {
                 foreach (string cvsFile in csvFiles)
                 {
-                    Console.WriteLine($"{Path.GetFileName(cvsFile),-15} : {Path.GetDirectoryName(cvsFile)}");
                     var csvFileData = ParseCSVFile(cvsFile);
-                    SaveCSVtoXML(csvFileData);
+                    PrintFirstCVSData(csvFileData);
                 }
             }
         }
 
-        private static void SaveCSVtoXML(List<dynamic> csvFileData)
+        public static void PrintFirstCVSData(List<dynamic> csvFileData)
         {
-            var i = 0;
-            foreach(dynamic line in csvFileData)
+            if (csvFileData != null)
             {
-                i++;
-                if (i > 10)
+                foreach (var field in csvFileData.First())
                 {
-                    break;
+                    Console.WriteLine($"{field.Key,-25}|||{field.Value}");
                 }
-                var fields = (IDictionary<string, object>)line;
-                foreach(var field in fields)
-                    Console.WriteLine($"Field name: {field.Key, -20}, field type: {field.Value.GetType(), -10}, field value: {field.Value}");
             }
         }
 
@@ -107,37 +101,51 @@ namespace ThomsonConsole
         {
             using (var csvReader = new TextFieldParser(csvFile))
             {
-                csvReader.SetDelimiters(new string[] { "," });
+                csvReader.SetDelimiters(DelimitersCSV);
                 string[] fields, namesOfFields = null;
                 List<dynamic> csvFileData = new List<dynamic>();
 
-                while (true)
+                fields = csvReader.ReadFields();
+                while (fields != null)
                 {
-                    fields = csvReader.ReadFields();
-                    if (fields == null)
-                    {
-                        break;
-                    }
                     if (namesOfFields == null)
                     {
-                        if (fields.Length > MinimalQuantityOfFieldsInCVSFile)
-                        {
-                            namesOfFields = fields;
-                        }
+                        namesOfFields = GetNamesOfFields(fields);
                     }
                     else
                     {
                         dynamic lineData = new ExpandoObject();
                         var line = (IDictionary<string, object>)lineData;
-                        for(int i = 0;i < namesOfFields.Length; i++)
+                        for (int i = 0; i < namesOfFields.Length; i++)
                         {
-                            line.Add(namesOfFields[i], fields[i]);
+                            try
+                            {
+                                line.Add(namesOfFields[i], fields[i]);
+                            }
+                            catch (System.ArgumentException e)
+                            {
+                                Console.WriteLine(e.Message);
+                                Console.WriteLine($"ERROR: Names of the columns in a csv file are not unique. File:{csvFile}.");
+                                return null;
+                            }
+                            catch (System.IndexOutOfRangeException e)
+                            {
+                                Console.WriteLine(e.Message);
+                                Console.WriteLine($"ERROR: Stucture of a cvs file is wrong. File:{csvFile}. Line {csvReader.LineNumber}");
+                                return null;
+                            }
                         }
                         csvFileData.Add(lineData);
                     }
+                    fields = csvReader.ReadFields();
                 }
                 return csvFileData;
             }
+        }
+
+        private static string[] GetNamesOfFields(string[] fields)
+        {
+            return (fields.Length > MinimalQuantityOfFieldsInCVSFile)? fields : null;
         }
     }
 }
