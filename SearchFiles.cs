@@ -15,14 +15,17 @@ namespace ThomsonConsole
         static SearchFiles()
         {
             AppDirectory = Directory.GetCurrentDirectory();
+            DirectorySeparatorChar = Path.DirectorySeparatorChar;
+            FolderOfSourcefiles = DirectorySeparatorChar + "Thomson" + DirectorySeparatorChar;
             FilesSourceDirectory = AppDirectory + FolderOfSourcefiles;
         }
 
         static public string AppDirectory { get;}
         static public string FilesSourceDirectory { get;}
-        static public string TemptoryDirectory { get;}
+        static public string TemptoryDirectory { get; }
+        static string FolderOfSourcefiles { get; }
+        static public char DirectorySeparatorChar { get; }
 
-        const string FolderOfSourcefiles = @"\Thomson\";
         const string ZipFileMask = "*.zip";
         const string CSVFileMask = "*.csv";
 

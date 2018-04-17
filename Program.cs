@@ -18,10 +18,12 @@ namespace ThomsonConsole
 
             var cvsFiles = HandlingFiles.UnZipCVSFiles(zipFiles);
             HandlingFiles.HandleCSVFiles(cvsFiles);
-            Console.WriteLine($"Find {countZipFiles} zip files. In {SearchFiles.FilesSourceDirectory}");
+
+
 
 
             Console.ReadLine();
+
         }
 
 
