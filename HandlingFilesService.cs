@@ -10,27 +10,10 @@ using System.Dynamic;
 
 namespace ThomsonConsole
 {
-    class HandlingFiles
+    class HandlingFilesService
     {
-        static HandlingFiles()
-        {
-            FolderForUnzipFiles = SearchFiles.DirectorySeparatorChar + "Temp" + SearchFiles.DirectorySeparatorChar;
-            TemporaryDirectory = SearchFiles.AppDirectory + FolderForUnzipFiles;
-            DelimitersCSV = new string[] { "," };
-        }
 
-        static public string TemporaryDirectory { get; }
-        static string FolderForUnzipFiles { get; }
-        static string[] DelimitersCSV { get; }
-
-        private const int MinimalQuantityOfFieldsInCVSFile = 1;
- 
-        public void ClearTemporaryDirectory()
-        {
-            ClearDirectory(TemporaryDirectory);
-        }
-
-        static void ClearDirectory(string directoryName)
+        static void CleanDirectory(string directoryName)
         {
             if (Directory.Exists(directoryName))
             {
@@ -43,34 +26,34 @@ namespace ThomsonConsole
             List<string> result = new List<string>();
             if (zipFiles != null)
             {
-                ClearDirectory(TemporaryDirectory);
+                CleanDirectory(Constans.TemporaryDirectory);
                 foreach (string zipFile in zipFiles)
                 {
-                    result.AddRange(UnZipCVSFiles(zipFile));
+                    result.AddRange(UnZipCVSFile(zipFile));
                 }
             }
             return result;
         }
 
-        static List<string> UnZipCVSFiles(string zipFile)
+        static List<string> UnZipCVSFile(string zipFile)
         {
             var unZipDirectory = GetUnzipDirectory(zipFile);
-            ClearDirectory(unZipDirectory);
+            CleanDirectory(unZipDirectory);
             ZipFile.ExtractToDirectory(zipFile, unZipDirectory);
 
-            return SearchFiles.FindAllCSVFiles(unZipDirectory);
+            return SearchFilesService.FindAllCSVFiles(unZipDirectory);
         }
 
-        private static string GetUnzipDirectory(string zipFile)
+        static string GetUnzipDirectory(string zipFile)
         {
             string zipFileDirectory = Path.GetDirectoryName(zipFile);
-            string ParthOfPathToZipfile = "";
-            if (zipFileDirectory.Length > SearchFiles.FilesSourceDirectory.Length)
+            string PartOfPathToZipfile = "";
+            if (zipFileDirectory.Length > Constans.FilesSourceDirectory.Length)
             {
-                ParthOfPathToZipfile = zipFileDirectory.Substring(SearchFiles.FilesSourceDirectory.Length);
+                PartOfPathToZipfile = zipFileDirectory.Substring(Constans.FilesSourceDirectory.Length);
             }
 
-            return TemporaryDirectory + ParthOfPathToZipfile + SearchFiles.DirectorySeparatorChar + Path.GetFileNameWithoutExtension(zipFile);
+            return Constans.TemporaryDirectory + PartOfPathToZipfile + Constans.DirectorySeparatorChar + Path.GetFileNameWithoutExtension(zipFile);
             
         }
 
@@ -101,7 +84,7 @@ namespace ThomsonConsole
         {
             using (var csvReader = new TextFieldParser(csvFile))
             {
-                csvReader.SetDelimiters(DelimitersCSV);
+                csvReader.SetDelimiters(Constans.DelimitersCSV);
                 string[] fields, namesOfFields = null;
                 List<dynamic> csvFileData = new List<dynamic>();
 
@@ -143,9 +126,9 @@ namespace ThomsonConsole
             }
         }
 
-        private static string[] GetNamesOfFields(string[] fields)
+        static string[] GetNamesOfFields(string[] fields)
         {
-            return (fields.Length > MinimalQuantityOfFieldsInCVSFile)? fields : null;
+            return (fields.Length > Constans.MinimalQuantityOfFieldsInCVSFile) ? fields : null;
         }
     }
 }

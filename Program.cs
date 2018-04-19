@@ -12,20 +12,19 @@ namespace ThomsonConsole
     {
         static void Main(string[] args)
         {
-            var zipFiles = SearchFiles.FindAllZipFiles();
+            var zipFiles = SearchFilesService.FindAllZipFiles();
 
             var countZipFiles = zipFiles == null ? 0 : zipFiles.Count;
-            Console.WriteLine($"Find {countZipFiles} zip files. In {SearchFiles.FilesSourceDirectory}");
+            Console.WriteLine($"Find {countZipFiles} zip files. In {Constans.FilesSourceDirectory}");
 
-            var cvsFiles = HandlingFiles.UnZipCVSFiles(zipFiles);
+            var cvsFiles = HandlingFilesService.UnZipCVSFiles(zipFiles);
 
             var countCVSFiles = zipFiles == null ? 0 : cvsFiles.Count;
             Console.WriteLine($"Unpack {countZipFiles} cvs files.");
 
-            HandlingFiles.HandleCSVFiles(cvsFiles);
+            HandlingFilesService.HandleCSVFiles(cvsFiles);
 
             Console.ReadLine();
-
         }
 
 

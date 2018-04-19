@@ -10,38 +10,23 @@ using System.Threading.Tasks;
 namespace ThomsonConsole
 {
 
-    public class SearchFiles
+    public class SearchFilesService
     {
-        static SearchFiles()
-        {
-            AppDirectory = Directory.GetCurrentDirectory();
-            DirectorySeparatorChar = Path.DirectorySeparatorChar;
-            FolderOfSourcefiles = DirectorySeparatorChar + "Thomson" + DirectorySeparatorChar;
-            FilesSourceDirectory = AppDirectory + FolderOfSourcefiles;
-        }
 
-        static public string AppDirectory { get;}
-        static public string FilesSourceDirectory { get;}
-        static public string TemptoryDirectory { get; }
-        static string FolderOfSourcefiles { get; }
-        static public char DirectorySeparatorChar { get; }
-
-        const string ZipFileMask = "*.zip";
-        const string CSVFileMask = "*.csv";
 
         public static List<string> FindAllZipFiles()
         {
-            return FindAllFiles(FilesSourceDirectory, ZipFileMask);
+            return FindAllFiles(Constans.FilesSourceDirectory, Constans.ZipFileMask);
         }
 
         public static List<string> FindAllZipFiles(string root)
         {
-            return FindAllFiles(root, ZipFileMask);
+            return FindAllFiles(root, Constans.ZipFileMask);
         }
 
         public static List<string> FindAllCSVFiles(string root)
         {
-            return FindAllFiles(root, CSVFileMask);
+            return FindAllFiles(root, Constans.CSVFileMask);
         }
 
 

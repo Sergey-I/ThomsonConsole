@@ -45,8 +45,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="HandlingFiles.cs" />
-    <Compile Include="SearchFiles.cs" />
+    <Compile Include="Constans.cs" />
+    <Compile Include="HandlingFilesService.cs" />
+    <Compile Include="SearchFilesService.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
