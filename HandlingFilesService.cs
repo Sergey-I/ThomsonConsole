@@ -63,8 +63,13 @@ namespace ThomsonConsole
             {
                 foreach (string cvsFile in csvFiles)
                 {
-                    var csvFileData = ParseCSVFile(cvsFile);
-                    PrintFirstCVSData(csvFileData);
+                    var classDescription = ParseCSVFileDynamic(cvsFile);
+                    //PrintFirstCVSData(csvFileData);
+                    if (classDescription != null)
+                    {
+                        classDescription.PrintWriteDescription();
+                    }
+
                 }
             }
         }
@@ -80,10 +85,17 @@ namespace ThomsonConsole
             }
         }
 
-        public static List<dynamic> ParseCSVFile(string csvFile)
+
+        static string[] GetNamesOfFields(string[] fields)
+        {
+            return (fields.Length > Constans.MinimalQuantityOfFieldsInCVSFile) ? fields : null;
+        }
+
+        public static ClassGenerator ParseCSVFileDynamic(string csvFile)
         {
             using (var csvReader = new TextFieldParser(csvFile))
             {
+                ClassGenerator classGenerator = null;
                 csvReader.SetDelimiters(Constans.DelimitersCSV);
                 string[] fields, namesOfFields = null;
                 List<dynamic> csvFileData = new List<dynamic>();
@@ -98,7 +110,7 @@ namespace ThomsonConsole
                     else
                     {
                         dynamic lineData = new ExpandoObject();
-                        var line = (IDictionary<string, object>)lineData;
+                        var line =  (IDictionary<string, object>)lineData;
                         for (int i = 0; i < namesOfFields.Length; i++)
                         {
                             try
@@ -122,13 +134,13 @@ namespace ThomsonConsole
                     }
                     fields = csvReader.ReadFields();
                 }
-                return csvFileData;
-            }
-        }
+                if (namesOfFields != null && csvFileData != null)
+                {
+                    classGenerator = new ClassGenerator(csvFileData, namesOfFields.ToList());
+                }
 
-        static string[] GetNamesOfFields(string[] fields)
-        {
-            return (fields.Length > Constans.MinimalQuantityOfFieldsInCVSFile) ? fields : null;
+                return classGenerator;
+            }
         }
     }
 }
